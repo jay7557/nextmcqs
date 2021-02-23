@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+   
+    <title>Nextmcqs</title>
+    <!--
+      manifest.json provides metadata used when your web app is added to the
+      homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+      
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <!-- <script src="https://checkout.razorpay.com/v1/checkout.js"></script> -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-118965717-3"></script>
+    <script crossorigin src="..."></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      // Shared ID
+      gtag('config', 'UA-118965717-3');
+      // React.js ID
+      gtag('config', 'UA-118965717-6');
+    </script>
+  </head>
+  <body>
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <div id="root"></div>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+.login_logo img{
+    
+        height: 10 !important;
+    
+}
+.login_logo {
+
+    height: 102px;
+        text-align: center;
+
+}
+/* body  {
+  
+    background-color: #cccccc;
+  } */
+  .app.flex-row.align-items-center.login {
+    background-image: url('https://picsum.photos/1920/1080');
+}
+  /* .img {
+
+    vertical-align: middle;
+    border-style: none;
+    height: 72px;
+  }
+  img {
+    height: 127px ;
+} */
