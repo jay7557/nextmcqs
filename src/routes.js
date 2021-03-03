@@ -11,6 +11,7 @@ const AddSubjects = React.lazy(() => import("./views/Subject/addSubject"));
 const Questions = React.lazy(() => import("./views/Questions/index"));
 const AddTest = React.lazy(() => import("./views/Questions/addTest"));
 const AddQuestions = React.lazy(()=>import('./views/Questions/addQuestions'))
+const QuestionsPaper = React.lazy(()=>import('./views/Questions/questions'))
 const routes = [
   { path: "/", exact: true, name: "Home" },
   { path: "/dashboard", name: "Dashboard", component: Dashboard },
@@ -22,6 +23,8 @@ const routes = [
   { path: "/addTest", name: "AddTest", component: AddTest },
   { path: '/addquestions', name: 'addquestions', component:AddQuestions},
   { path: "/questions", name: "questions", component: Questions },
+  { path: "/questionsPaper", name: "questionsPaper", component: QuestionsPaper },
+
 ];
 
 export default routes;

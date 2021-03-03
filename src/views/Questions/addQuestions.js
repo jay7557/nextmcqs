@@ -17,13 +17,16 @@ import {
   CardHeader,
 } from "reactstrap";
 import { HttpCallPost, HttpCallGet, handleError } from "../../apis/usehttps";
-import { GET, POST } from "../../apis/constants";
+import { GET, POST, PUT } from "../../apis/constants";
 import { Course, Subject, Question, Test } from "../../apis/Network";
 export default class AddQuestions extends Component {
   constructor(props) {
     super(props);
     this.state = {
       errors: {},
+      testId:'',
+      test: {},
+      totalQue:[]
     };
   }
 
@@ -32,11 +35,13 @@ export default class AddQuestions extends Component {
   };
 
   componentDidMount = () => {
+    this.getTest();
   };
- 
+
   validate = () => {
     let question = this.state.question;
-    let rightAnswer = this.state.rightAnswer;
+    let rightAnswer=this.state.rightAnswer
+    let wrongAnswer = this.state.wrongAnswer;
     let wrongAnswer1 = this.state.wrongAnswer1;
     let wrongAnswer2 = this.state.wrongAnswer2;
     let wrongAnswer3 = this.state.wrongAnswer3;
@@ -49,7 +54,11 @@ export default class AddQuestions extends Component {
     }
     if (!rightAnswer) {
       isValid = false;
-      errors["rightAnswer"] = "Please enter right answer.";
+      errors["rightAnswer"] = "Please enter Right answer.";
+    }
+    if (!wrongAnswer) {
+      isValid = false;
+      errors["wrongAnswer"] = "Please enter Wrong answer.";
     }
     if (!wrongAnswer1) {
       isValid = false;
@@ -75,15 +84,22 @@ export default class AddQuestions extends Component {
     event.preventDefault();
     if (this.validate()) {
       var data = {
-        testName: this.state.testName,
-        courseId: this.state.courseId,
+        testId:this.state.testId,
+        question: this.state.question,
+        ansA: this.state.wrongAnswer,
+        ansB: this.state.wrongAnswer1,
+        ansC: this.state.wrongAnswer2,
+        ansD: this.state.wrongAnswer3,
+        rightAns:this.state.rightAnswer
       };
       console.log("data_newww", data);
       const userdata = localStorage.getItem("token");
 
-      HttpCallPost(`${Test}`, POST, userdata, data)
+      HttpCallPost(`${Test}`, PUT, userdata, data)
         .then((res) => {
-          console.log("add coures", res);
+          console.log("add coures", res.data);
+          this.getTest();
+
           // this.props.history.push('questions');
         })
         .catch((err) => {
@@ -95,11 +111,27 @@ export default class AddQuestions extends Component {
   onBack = () => {
     this.props.history.push("questions");
   };
+  getTest = () => {
+    this.setState({testId:localStorage.getItem("testId")})
+   let testId=localStorage.getItem("testId")
+    const userdata = localStorage.getItem("token");
+    console.log("testId",testId)
+    HttpCallGet(`${Test}/${testId}`, GET, userdata)
+      .then((res) => {
+        console.log("resp", res.data.data[0].questions);
+        this.setState({ test: res.data.data[0],totalQue:res.data.data[0].questions });
+        
+      })
+      .catch((err) => {
+        // handleError(err)
+      });
+  };
   render() {
     return (
       <Card>
         <CardHeader>
-          <h3>Test </h3>
+          <h3>{this.state.test.testName} </h3>
+          <h3>Total Question {this.state.totalQue.length}</h3>
         </CardHeader>
         <CardBody>
           <div>
@@ -117,7 +149,7 @@ export default class AddQuestions extends Component {
                     bsSize="sm"
                     placeholder="type questions here"
                   />
-                 <div className="text-danger">
+                  <div className="text-danger">
                     {this.state.errors.question}
                   </div>
                 </Col>
@@ -126,7 +158,7 @@ export default class AddQuestions extends Component {
             <div className="md-4">
               <FormGroup>
                 <Col md="3">
-                  <Label htmlFor="selectSm">Right Answer</Label>
+                  <Label htmlFor="selectSm"> Right Answer</Label>
                 </Col>
                 <Col xs="12" md="9">
                   <Input
@@ -137,7 +169,7 @@ export default class AddQuestions extends Component {
                     bsSize="sm"
                     placeholder="type answer here"
                   />
-                 <div className="text-danger">
+                  <div className="text-danger">
                     {this.state.errors.rightAnswer}
                   </div>
                 </Col>
@@ -146,7 +178,27 @@ export default class AddQuestions extends Component {
             <div className="md-4">
               <FormGroup>
                 <Col md="3">
-                  <Label htmlFor="selectSm">Wrong Answer</Label>
+                  <Label htmlFor="selectSm"> Answer A</Label>
+                </Col>
+                <Col xs="12" md="9">
+                  <Input
+                    type="text"
+                    name="wrongAnswer"
+                    onChange={this.handleonInput}
+                    id="SelectLm"
+                    bsSize="sm"
+                    placeholder="type answer here"
+                  />
+                  <div className="text-danger">
+                    {this.state.errors.wrongAnswer}
+                  </div>
+                </Col>
+              </FormGroup>
+            </div>
+            <div className="md-4">
+              <FormGroup>
+                <Col md="3">
+                  <Label htmlFor="selectSm"> Answer B</Label>
                 </Col>
                 <Col xs="12" md="9">
                   <Input
@@ -157,7 +209,7 @@ export default class AddQuestions extends Component {
                     bsSize="sm"
                     placeholder="type answer here"
                   />
-                 <div className="text-danger">
+                  <div className="text-danger">
                     {this.state.errors.wrongAnswer1}
                   </div>
                 </Col>
@@ -166,7 +218,7 @@ export default class AddQuestions extends Component {
             <div className="md-4">
               <FormGroup>
                 <Col md="3">
-                  <Label htmlFor="selectSm">Wrong Answer</Label>
+                  <Label htmlFor="selectSm">Answer C</Label>
                 </Col>
                 <Col xs="12" md="9">
                   <Input
@@ -177,7 +229,7 @@ export default class AddQuestions extends Component {
                     bsSize="sm"
                     placeholder="type answer here"
                   />
-                 <div className="text-danger">
+                  <div className="text-danger">
                     {this.state.errors.wrongAnswer2}
                   </div>
                 </Col>
@@ -186,7 +238,7 @@ export default class AddQuestions extends Component {
             <div className="md-4">
               <FormGroup>
                 <Col md="3">
-                  <Label htmlFor="selectSm">Wrong Answer</Label>
+                  <Label htmlFor="selectSm"> Answer D</Label>
                 </Col>
                 <Col xs="12" md="9">
                   <Input
@@ -197,7 +249,7 @@ export default class AddQuestions extends Component {
                     bsSize="sm"
                     placeholder="type answer here"
                   />
-                 <div className="text-danger">
+                  <div className="text-danger">
                     {this.state.errors.wrongAnswer3}
                   </div>
                 </Col>

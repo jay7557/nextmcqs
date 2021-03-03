@@ -78,7 +78,9 @@ export default class AddTest extends Component {
 
     HttpCallPost(`${Test}`, POST, userdata, data)
       .then((res) => {
-        console.log("add coures", res);
+        console.log("add coures", res.data.data._id);
+        localStorage.setItem('testId',res.data.data._id)
+
         this.props.history.push('addquestions');
       })
       .catch((err) => {

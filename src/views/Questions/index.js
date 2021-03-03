@@ -57,13 +57,17 @@ export default class Questions extends Component {
     var id = this.state.subject_id;
     HttpCallGet(`${Test}`, GET, userdata)
       .then((res) => {
-        console.log("getTestList", res);
+        console.log("getTestList", res.data.data);
         this.setState({ testList: res.data.data });
       })
       .catch((err) => {
         // handleError(err)
       });
   };
+  onQuestionsPaper=(item)=>{
+    localStorage.setItem('testId',item._id)
+    this.props.history.push('questionsPaper');
+  }
   render() {
     return (
       <div>
@@ -101,15 +105,30 @@ export default class Questions extends Component {
         </Card>
         <Card>
           <CardHeader>
-            <i className="fa fa-align-justify"></i> Test
+            <i className="fa fa-align-justify"></i> Test List
           </CardHeader>
           <CardBody>
             <div>
               {this.state.testList.map((item, i) => {
                 return (
-                  <div key={i}>
-                    <h6>{item.testName}</h6>
-                  </div>
+                  <Card onClick={()=>this.onQuestionsPaper(item)}>
+                    <CardBody>
+                      <div key={i} >
+                        <Row>
+                          <Col>
+                          <h3 >{i+1}</h3>
+                          </Col>
+                          <Col>
+                          <h3>{item.testName}</h3>
+                          </Col>
+                          <Col>
+                          {/* <h3>{item.testName.courseId["couresName"]}</h3> */}
+                          </Col>
+                        </Row>
+                        
+                      </div>
+                    </CardBody>
+                  </Card>
                 );
               })}
             </div>
