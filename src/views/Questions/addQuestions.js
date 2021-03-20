@@ -24,9 +24,10 @@ export default class AddQuestions extends Component {
     super(props);
     this.state = {
       errors: {},
-      testId:'',
+      testId: "",
+      testName:'test',
       test: {},
-      totalQue:[]
+      totalQue: [],
     };
   }
 
@@ -40,7 +41,7 @@ export default class AddQuestions extends Component {
 
   validate = () => {
     let question = this.state.question;
-    let rightAnswer=this.state.rightAnswer
+    let rightAnswer = this.state.rightAnswer;
     let wrongAnswer = this.state.wrongAnswer;
     let wrongAnswer1 = this.state.wrongAnswer1;
     let wrongAnswer2 = this.state.wrongAnswer2;
@@ -84,13 +85,13 @@ export default class AddQuestions extends Component {
     event.preventDefault();
     if (this.validate()) {
       var data = {
-        testId:this.state.testId,
+        testId: this.state.testId,
         question: this.state.question,
         ansA: this.state.wrongAnswer,
         ansB: this.state.wrongAnswer1,
         ansC: this.state.wrongAnswer2,
         ansD: this.state.wrongAnswer3,
-        rightAns:this.state.rightAnswer
+        rightAns: this.state.rightAnswer,
       };
       console.log("data_newww", data);
       const userdata = localStorage.getItem("token");
@@ -99,7 +100,15 @@ export default class AddQuestions extends Component {
         .then((res) => {
           console.log("add coures", res.data);
           this.getTest();
-
+          document.getElementById("questionForm").reset();
+          this.setState({
+            question: "",
+            wrongAnswer: "",
+            wrongAnswer1: "",
+            wrongAnswer2: "",
+            wrongAnswer3: "",
+            rightAnswer: "",
+          });
           // this.props.history.push('questions');
         })
         .catch((err) => {
@@ -108,19 +117,25 @@ export default class AddQuestions extends Component {
         });
     }
   };
+  onViewQuesion=() => {
+    console.log("id",this.state.test._id)
+    this.props.history.push('questionsPaper');
+  }
   onBack = () => {
     this.props.history.push("questions");
   };
   getTest = () => {
-    this.setState({testId:localStorage.getItem("testId")})
-   let testId=localStorage.getItem("testId")
+    this.setState({ testId: localStorage.getItem("testId") });
+    let testId = localStorage.getItem("testId");
     const userdata = localStorage.getItem("token");
-    console.log("testId",testId)
+    console.log("testId", testId);
     HttpCallGet(`${Test}/${testId}`, GET, userdata)
       .then((res) => {
         console.log("resp", res.data.data[0].questions);
-        this.setState({ test: res.data.data[0],totalQue:res.data.data[0].questions });
-        
+        this.setState({
+          test: res.data.data[0],
+          totalQue: res.data.data[0].questions,
+        });
       })
       .catch((err) => {
         // handleError(err)
@@ -130,11 +145,20 @@ export default class AddQuestions extends Component {
     return (
       <Card>
         <CardHeader>
-          <h3>{this.state.test.testName} </h3>
-          <h3>Total Question {this.state.totalQue.length}</h3>
+        <div className="row">
+            <div className="col">
+              <h3 className="text-uppercase">{this.state.test.testName} </h3>
+            </div>
+            <div className="col">
+              <Button className="btn btn-info float-right" onClick={this.onViewQuesion}>View Question</Button>
+            </div>
+          </div>
+          
+          <h6>Total Question {this.state.totalQue.length}</h6>
         </CardHeader>
         <CardBody>
           <div>
+            <Form id='questionForm'>
             <div className="md-4">
               <FormGroup>
                 <Col md="3">
@@ -277,6 +301,7 @@ export default class AddQuestions extends Component {
                 </Col>
               </Row>
             </FormGroup>
+            </Form>
           </div>
         </CardBody>
       </Card>

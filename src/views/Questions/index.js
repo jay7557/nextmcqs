@@ -18,10 +18,13 @@ import {
   Row,
   CardHeader,
 } from "reactstrap";
-import { HttpCallPost, HttpCallGet, handleError } from "../../apis/usehttps";
+import Swal from 'sweetalert2/dist/sweetalert2.js'
+
+import { HttpCallPost, HttpCallGet,HttpCallDelete, handleError } from "../../apis/usehttps";
 import { GET, POST } from "../../apis/constants";
 import { Course, Subject, Test } from "../../apis/Network";
 import "./index.css";
+var dateFormat = require("dateformat");
 export default class Questions extends Component {
   constructor(props) {
     super(props);
@@ -29,11 +32,21 @@ export default class Questions extends Component {
       course_list: [],
       SubjectList: [],
       testList: [],
+      AllData:[]
     };
   }
 
-  handleonInput = (event) => {
-    this.setState({ [event.target.name]: event.target.value }, () => {});
+  handleonSelect = (event) => {
+    let subject = event.target.value
+    if(subject ==="all"){
+      this.setState({testList: this.state.AllData})
+
+    }
+    else{
+      const result = this.state.AllData.filter(word => word.courseId.couresName ===subject);
+      this.setState({testList: result})
+    }
+   
   };
 
   componentDidMount = () => {
@@ -58,7 +71,7 @@ export default class Questions extends Component {
     HttpCallGet(`${Test}`, GET, userdata)
       .then((res) => {
         console.log("getTestList", res.data.data);
-        this.setState({ testList: res.data.data });
+        this.setState({ testList: res.data.data,AllData: res.data.data});
       })
       .catch((err) => {
         // handleError(err)
@@ -67,6 +80,44 @@ export default class Questions extends Component {
   onQuestionsPaper=(item)=>{
     localStorage.setItem('testId',item._id)
     this.props.history.push('questionsPaper');
+  }
+  onDelete = (id) => {
+    // alert(id)
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+         confirmButton: 'btn btn-success',
+         cancelButton: 'btn btn-danger'
+      },
+      buttonsStyling: false
+   })
+   swalWithBootstrapButtons.fire({
+      allowOutsideClick: false,
+      title: 'Are you sure?',
+      text: "Once deleted, you will not be able to recover this test paper !",
+      icon: 'warning',
+      showCancelButton: true,
+      cancelButtonText: 'No!',
+      confirmButtonText: 'Yes,Delete it!',
+      reverseButtons: true
+   })
+      .then((result) => {
+         if (result.value) {
+            this.Delete(id)
+         } else {
+         }
+      })
+  }
+  Delete=(id)=>{
+    const userdata = localStorage.getItem("token");
+
+    HttpCallDelete(`${Test}/${id}`, GET, userdata)
+    .then((res) => {
+      console.log("getTestList", res.data.data);
+      this.getTestList()
+    })
+    .catch((err) => {
+      // handleError(err)
+    });
   }
   render() {
     return (
@@ -94,7 +145,7 @@ export default class Questions extends Component {
                 </Input>
               </div>
               <div className="col-md-3">
-                <Link to={"/addTest"} className="btn btn-info">
+                <Link to={"/addTest"} className="btn btn-info float-right">
                   {" "}
                   Add New Questions
                 </Link>
@@ -104,35 +155,33 @@ export default class Questions extends Component {
           </CardBody>
         </Card>
         <Card>
-          <CardHeader>
-            <i className="fa fa-align-justify"></i> Test List
-          </CardHeader>
-          <CardBody>
-            <div>
-              {this.state.testList.map((item, i) => {
+          <table className="table">
+            <thead>
+              <tr>
+              <th>Number</th>
+              <th>Name</th>
+              <th>Course</th>
+              <th>Created Date</th>
+              <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+            {this.state.testList.map((item, i) => {
                 return (
-                  <Card onClick={()=>this.onQuestionsPaper(item)}>
-                    <CardBody>
-                      <div key={i} >
-                        <Row>
-                          <Col>
-                          <h3 >{i+1}</h3>
-                          </Col>
-                          <Col>
-                          <h3>{item.testName}</h3>
-                          </Col>
-                          <Col>
-                          {/* <h3>{item.testName.courseId["couresName"]}</h3> */}
-                          </Col>
-                        </Row>
-                        
-                      </div>
-                    </CardBody>
-                  </Card>
+                  <tr>
+                    <td>{i+1}.</td>
+                    <td><h6 className="text-uppercase">{item.testName}</h6></td>
+                    <td><h6 className="text-uppercase">{item.courseId.couresName}</h6></td>
+                    <td>{dateFormat(item.createdAt, "longDate")}</td>
+                    <td>
+                    <Button className='btn btn-success mr-3' onClick={()=>this.onQuestionsPaper(item)}>View</Button>
+                      <Button className='btn btn-danger' onClick={() => this.onDelete(item._id)}>Delete</Button>
+                    </td>
+                  </tr>  
                 );
               })}
-            </div>
-          </CardBody>
+            </tbody>
+          </table>
         </Card>
       </div>
     );
